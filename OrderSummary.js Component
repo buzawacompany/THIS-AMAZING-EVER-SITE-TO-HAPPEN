@@ -1,0 +1,65 @@
+import { useState } from "react";
+
+const OrderSummary = () => {
+  // Sample cart data (replace with props or state from a cart context)
+  const [cartItems, setCartItems] = useState([
+    { id: 1, name: "Wireless Headphones", price: 50, quantity: 1 },
+    { id: 2, name: "Smartwatch", price: 100, quantity: 1 },
+  ]);
+
+  const [promoCode, setPromoCode] = useState("");
+  const [discount, setDiscount] = useState(0);
+
+  // Function to update quantity
+  const updateQuantity = (id, newQuantity) => {
+    setCartItems(cartItems.map(item =>
+      item.id === id ? { ...item, quantity: newQuantity } : item
+    ));
+  };
+
+  // Calculate total price
+  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const total = subtotal - discount;
+
+  // Function to apply promo code
+  const applyPromoCode = () => {
+    if (promoCode === "DISCOUNT10") {
+      setDiscount(10); // Apply $10 discount
+    } else {
+      setDiscount(0); // No discount
+    }
+  };
+
+  return (
+    <div>
+      <h2>Order Summary</h2>
+      {cartItems.map((item) => (
+        <div key={item.id}>
+          <p>{item.name} - ${item.price} x 
+            <input 
+              type="number" 
+              value={item.quantity} 
+              min="1" 
+              onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))} 
+            />
+          </p>
+        </div>
+      ))}
+
+      <p>Subtotal: ${subtotal}</p>
+      <p>Discount: ${discount}</p>
+      <p><strong>Total: ${total}</strong></p>
+
+      {/* Promo Code Input */}
+      <input
+        type="text"
+        placeholder="Enter Promo Code"
+        value={promoCode}
+        onChange={(e) => setPromoCode(e.target.value)}
+      />
+      <button onClick={applyPromoCode}>Apply</button>
+    </div>
+  );
+};
+
+export default OrderSummary;
