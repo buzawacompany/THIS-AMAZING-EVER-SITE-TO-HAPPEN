@@ -1,0 +1,20 @@
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import OrderSummary from "./OrderSummary";
+import CheckoutForm from "./CheckoutForm";
+
+const stripePromise = loadStripe("your-public-key-here"); // Replace with your Stripe Public Key
+
+const CheckoutPage = () => {
+  return (
+    <Elements stripe={stripePromise}>
+      <div>
+        <h1>Checkout</h1>
+        <OrderSummary />
+        <CheckoutForm />
+      </div>
+    </Elements>
+  );
+};
+
+export default CheckoutPage;
