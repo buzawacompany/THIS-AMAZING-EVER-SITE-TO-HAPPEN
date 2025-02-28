@@ -1,0 +1,13 @@
+import { Link } from "react-router-dom";
+
+const CheckoutPage = () => {
+  return (
+    <div>
+      <h1>Checkout Page</h1>
+      <p>Click below to view checkout details:</p>
+      <Link to="/details">Go to Checkout Details</Link>
+    </div>
+  );
+};
+
+export default CheckoutPage;
