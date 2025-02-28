@@ -1,0 +1,201 @@
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import './App.css';
+
+
+import HomePage from './HomePage';
+import Page1 from './Page1';
+import Page2 from './Page2';
+import Page3 from './Page3';
+import Page4 from './Page4';
+import Page5 from './Page5';
+import PageSeven from './PageSeven';
+
+const App = () => {
+  const [showLogin, setShowLogin] = useState(false);
+  const [showSignup, setShowSignup] = useState(false);
+  const [activeTopic, setActiveTopic] = useState(null);
+  const [profileMenuVisible, setProfileMenuVisible] = useState(false);
+
+  
+  const videoURLs = {
+    Nike: 'https://www.youtube.com/embed/NikeBrandVideoURL',
+    Adidas: 'https://www.youtube.com/embed/AdidasBrandVideoURL',
+    Apple: 'https://www.youtube.com/embed/AppleBrandVideoURL',
+    Samsung: 'https://www.youtube.com/embed/SamsungBrandVideoURL',
+    Gucci: 'https://www.youtube.com/embed/GucciBrandVideoURL',
+    Amazon: 'https://www.youtube.com/embed/AmazonBrandVideoURL',
+    Zara: 'https://www.youtube.com/embed/ZaraBrandVideoURL',
+    H&M: 'https://www.youtube.com/embed/HMBrandVideoURL',
+    Tesla: 'https://www.youtube.com/embed/TeslaBrandVideoURL',
+    IKEA: 'https://www.youtube.com/embed/IKEABrandVideoURL',
+  };
+
+ 
+  const topics = Object.keys(videoURLs);
+
+  const [activeVideoURL, setActiveVideoURL] = useState(null);  
+  const [activeLinks, setActiveLinks] = useState([]);          
+  // Dynamic action links based on selected video/brand
+  const videoActions = {
+    Nike: ['Add to Cart', 'View Details', 'Checkout'],
+    Adidas: ['Add to Cart', 'View Details', 'Checkout'],
+    Apple: ['Add to Cart', 'View Details', 'Checkout'],
+    Samsung: ['Add to Cart', 'View Details', 'Checkout'],
+    Gucci: ['Add to Cart', 'View Details', 'Checkout'],
+    Amazon: ['Add to Cart', 'View Details', 'Checkout'],
+    Zara: ['Add to Cart', 'View Details', 'Checkout'],
+    H&M: ['Add to Cart', 'View Details', 'Checkout'],
+    Tesla: ['Add to Cart', 'View Details', 'Checkout'],
+    IKEA: ['Add to Cart', 'View Details', 'Checkout'],
+  };
+
+  // Handle brand selection
+  const handleBrandClick = (brand) => {
+    setActiveTopic(brand);  // Set the active brand
+    setActiveVideoURL(videoURLs[brand]);  // Set the corresponding video URL
+    setActiveLinks(videoActions[brand]);  // Set dynamic action links
+  };
+
+  return (
+    <Router>
+      <div className="app-container">
+        {/* Side Navigation Container */}
+        <div className="side-nav">
+          <ul>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/page1">Page 1</Link></li>
+            <li><Link to="/page2">Page 2</Link></li>
+            <li><Link to="/page3">Page 3</Link></li>
+            <li><Link to="/page4">Page 4</Link></li>
+            <li><Link to="/page5">Page 5</Link></li>
+          </ul>
+        </div>
+
+        {/* Main Content Container */}
+        <div className="main-content">
+          <Routes>
+            <Route path="/" element={
+              <div>
+                {/* Home Page */}
+                <header>
+                  <div className="container">
+                    <ul className="nav-links">
+                      {topics.map((brand, index) => (
+                        <li key={index}>
+                          <a href={`#section${index + 1}`} onClick={() => handleBrandClick(brand)}>
+                            {brand} Preview
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="profile-container">
+                    <div className="profile-icon" onClick={() => setProfileMenuVisible(!profileMenuVisible)} onMouseEnter={() => setProfileMenuVisible(true)} onMouseLeave={() => setProfileMenuVisible(false)}>
+                      <span>👤</span> {/* Profile Icon */}
+                    </div>
+                    {profileMenuVisible && (
+                      <div className="profile-menu">
+                        <ul>
+                          <li><Link to="/profile">My Account</Link></li>
+                          <li><Link to="/settings">Settings</Link></li>
+                          <li><Link to="/logout">Log Out</Link></li>
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </header>
+
+                <main>
+                  <div className="intro">
+                    <h1>Explore Brands</h1>
+                    <p>Check out brand previews from your favorite marketplaces.</p>
+                    <button onClick={toggleLogin}>Stay with us!</button>
+
+                    <div className="login-signup">
+                      <h2>Login or Sign Up to Upload Videos</h2>
+                      <button onClick={toggleLogin}>Login</button>
+                      <button onClick={toggleSignup}>Sign Up</button>
+
+                      {showLogin && (
+                        <div id="loginForm">
+                          <h3>Login</h3>
+                          <input type="text" placeholder="Username" required />
+                          <input type="password" placeholder="Password" required />
+                          <button>Login</button>
+                          <p>Don't have an account? <a href="#" onClick={toggleSignup}>Sign Up</a></p>
+                        </div>
+                      )}
+
+                      {showSignup && (
+                        <div id="signupForm">
+                          <h3>Sign Up</h3>
+                          <input type="text" placeholder="Username" required />
+                          <input type="password" placeholder="Password" required />
+                          <button>Sign Up</button>
+                          <p>Already have an account? <a href="#" onClick={toggleLogin}>Login</a></p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Display Active Video */}
+                  {activeVideoURL && (
+                    <div className="video-container">
+                      <iframe 
+                        src={activeVideoURL} 
+                        title={activeTopic} 
+                        allowFullScreen
+                        width="100%" 
+                        height="500px"
+                      ></iframe>
+                      <p className="video-text">Enjoy the brand preview for {activeTopic}!</p>
+
+                      {/* Display Dynamic Action Links */}
+                      <div className="action-links">
+                        {activeLinks.map((action, index) => (
+                          <Link key={index} to={`/${action.toLowerCase().replace(" ", "-")}`} className="action-link">
+                            <span>{action}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="sections-grid">
+                    {topics.map((brand, index) => (
+                      <section id={`section${index + 1}`} key={index}>
+                        <h2>{activeTopic ? activeTopic : brand}</h2>
+                        <iframe 
+                          src={activeTopic ? videoURLs[activeTopic] : videoURLs[brand]} 
+                          title={brand} 
+                          allowFullScreen></iframe>
+                        <p className="video-text">Enjoy the brand preview for {activeTopic ? activeTopic : brand}!</p>
+                        <button onClick={() => handleBrandClick(brand)}>Watch {brand} Video</button>
+                        <Link to={`/page7`}>
+                          <button>More Info</button>
+                        </Link>
+                      </section>
+                    ))}
+                  </div>
+                </main>
+              </div>
+            } />
+            <Route path="/page1" element={<Page1 />} />
+            <Route path="/page2" element={<Page2 />} />
+            <Route path="/page3" element={<Page3 />} />
+            <Route path="/page4" element={<Page4 />} />
+            <Route path="/page5" element={<Page5 />} />
+            <Route path="/add-to-cart" element={<Page7 />} />
+            <Route path="/view-details" element={<Page7 />} />
+            <Route path="/checkout" element={<Page7 />} />
+            <Route path="/page7" component={PageSeven} />
+          </Routes>
+        </div>
+      </div>
+    </Router>
+  );
+};
+
+export default App;
