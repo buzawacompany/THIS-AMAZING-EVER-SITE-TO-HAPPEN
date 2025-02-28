@@ -1,0 +1,25 @@
+const express = require("express");
+const Stripe = require("stripe");
+const cors = require("cors");
+
+const app = express();
+const stripe = new Stripe("your-secret-key-here"); // Replace with your Stripe Secret Key
+
+app.use(cors());
+app.use(express.json());
+
+app.post("/create-payment-intent", async (req, res) => {
+  try {
+    const { amount } = req.body;
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount * 100, // Convert to cents
+      currency: "usd",
+    });
+
+    res.json({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.listen(5000, () => console.log("Server running on port 5000"));
