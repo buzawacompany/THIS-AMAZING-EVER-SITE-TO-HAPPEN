@@ -1,0 +1,72 @@
+import { useState } from "react";
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+
+const CheckoutForm = () => {
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    address: "",
+    city: "",
+    zip: "",
+  });
+
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [message, setMessage] = useState("");
+
+  // Handle input changes
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Handle payment submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!stripe || !elements) return;
+
+    setPaymentProcessing(true);
+
+    const { paymentIntent, error } = await stripe.confirmCardPayment(
+      "your-client-secret-from-backend", // Replace with dynamic secret
+      {
+        payment_method: {
+          card: elements.getElement(CardElement),
+          billing_details: { name: formData.name, email: formData.email },
+        },
+      }
+    );
+
+    setPaymentProcessing(false);
+
+    if (error) {
+      setMessage(error.message);
+    } else if (paymentIntent.status === "succeeded") {
+      setMessage("Payment successful! Order placed.");
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Billing & Shipping Details</h2>
+      <input type="text" name="name" placeholder="Full Name" onChange={handleChange} required />
+      <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
+      <input type="text" name="address" placeholder="Address" onChange={handleChange} required />
+      <input type="text" name="city" placeholder="City" onChange={handleChange} required />
+      <input type="text" name="zip" placeholder="ZIP Code" onChange={handleChange} required />
+
+      <h2>Payment Details</h2>
+      <CardElement />
+
+      <button type="submit" disabled={paymentProcessing}>
+        {paymentProcessing ? "Processing..." : "Pay Now"}
+      </button>
+
+      {message && <p>{message}</p>}
+    </form>
+  );
+};
+
+export default CheckoutForm;
