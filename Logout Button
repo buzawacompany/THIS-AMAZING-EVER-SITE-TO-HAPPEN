@@ -1,0 +1,44 @@
+import React, { useState } from "react";
+import { View, Text, Switch, StyleSheet, TouchableOpacity } from "react-native";
+import { auth } from "../firebaseConfig";
+import { signOut } from "firebase/auth";
+
+const SettingsScreen = ({ navigation }) => {
+  const [darkMode, setDarkMode] = useState(false);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    alert("Logged Out!");
+    navigation.replace("Auth");
+  };
+
+  return (
+    <View style={[styles.container, darkMode && styles.darkContainer]}>
+      <Text style={[styles.title, darkMode && styles.darkText]}>Settings</Text>
+      <View style={styles.settingItem}>
+        <Text style={[styles.settingText, darkMode && styles.darkText]}>Dark Mode</Text>
+        <Switch value={darkMode} onValueChange={setDarkMode} />
+      </View>
+      <TouchableOpacity style={styles.settingItem} onPress={handleLogout}>
+        <Text style={[styles.settingText, { color: "red" }]}>Logout</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  darkContainer: { backgroundColor: "#222" },
+  title: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
+  settingItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  settingText: { fontSize: 18 },
+});
+
+export default SettingsScreen;
